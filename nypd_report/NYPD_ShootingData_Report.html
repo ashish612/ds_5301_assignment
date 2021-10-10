@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+	<head>
+		<title>NYPD Historical Shooting data analysis</title>
+		<style type="text/css">
+			.center {
+				margin: auto;
+  				width: 50%;
+  				border: 3px solid green;
+  				padding: 10px;
+			}
+
+			table, th, td {
+  				border: 1px solid black;
+  				width: 50%;
+  				margin: 10px;
+			}
+
+			th {
+			  background-color: #04AA6D;
+			  color: white;
+			}			
+
+			tr:nth-child(even) {
+				background-color: #f2f2f2;
+			}
+
+			* {
+			  box-sizing: border-box;
+			}
+
+			/* Create a two-column layout */
+			.column {
+			  float: left;
+			  width: 50%;
+			  padding: 5px;
+			}
+
+			/* Clearfix (clear floats) */
+			.row::after {
+			  content: "";
+			  clear: both;
+			  display: table;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<h1 class="center">NYPD Historical Shooting data analysis</h1>		
+
+		<div>		
+			<p style="font-weight: bold;">Data Source Information</p>
+			<ul>
+				<li>
+					Available on the <a href="https://catalog.data.gov"> NYPD website </a>
+				</li>
+				<li>
+					A list of every shooting incident that occurred in NYC going back to 2006 through the end of the 2020.
+				</li>			
+				<li>
+					Each record represents a shooting incident in NYC and includes information about the event, the location and time of occurrence
+				</li>
+			</ul>	
+		</div>
+		
+		<hr/>
+
+		<div>
+			<p style="font-weight: bold;">Data Analysis</p>
+
+			<p>Data formatting was required before any analysis could be performed. It involved removing missing data, formate dates, and discard unwanted columns.</p>
+
+
+			<ul>
+				<li>
+					Data contains information about 5 New York Boroughs ( Queens, Bronx, Brooklyn, Manhattan and Straten Island).
+				</li>
+				<li>
+					<span style="font-weight:bolder;">2709</span> shootings occured in Brooklyn between 2006 and 2020, topping the chart with Bronx following at <span style="font-weight:bolder;">1903</span> shootings during the same period.				
+				</li>				
+				<li>
+					Most of the shootings perpetrators were identified as black male.					
+				</li>
+				<li>
+					Between 2006 and 2019, shooting has gradually gone down in NY
+				</li>				
+
+			</ul>
+		
+			<img src="shootings_per_boro.jpeg" style="height: 400px; width: 600px;" title="Shootings per Borough"/>
+			<img src="shooting_rate_year.jpeg" style="height: 400px; width: 600px;" title="Shootings per year accross all Boroughs"/>
+
+
+			<div class="row">
+				<div class="column">
+					<p style="font-weight:bold;">Perpetrator summary by Gender</p>
+					<table>
+						<tr>
+							<th>Perpetrator Sex</th>
+							<th>Count</th>
+						</tr>
+						<tr>
+							<td>Male</td>
+							<td>6072</td>							
+						</tr>
+						<tr>
+							<td>Unknown</td>
+							<td>595</td>							
+						</tr>
+						<tr>
+							<td>Female</td>
+							<td>176</td>							
+						</tr>
+					</table>
+				</div>
+
+				<div class="column">
+					<p style="font-weight:bold;">Perpetrator summary by Race</p>
+
+					<table>
+						<tr>
+							<th>Perpetrator Race</th>
+							<th>Count</th>
+						</tr>
+						<tr>
+							<td>Black</td>
+							<td>4633</td>							
+						</tr>
+						<tr>
+							<td>White Hispanic</td>
+							<td>802</td>							
+						</tr>
+						<tr>
+							<td>Unknown</td>
+							<td>760</td>							
+						</tr>
+						<tr>
+							<td>Black Hispanic</td>
+							<td>449</td>							
+						</tr>
+						<tr>
+							<td>White</td>
+							<td>140</td>							
+						</tr>
+						<tr>
+							<td>Asian/Pacific Islander</td>
+							<td>58</td>							
+						</tr>
+						<tr>
+							<td>American Indian/Alaskan Native</td>
+							<td>1</td>							
+						</tr>
+					</table>
+
+				</div>
+			</div>
+		</div>
+		
+		</body>	
+</html>
