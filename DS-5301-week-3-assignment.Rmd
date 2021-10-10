@@ -1,0 +1,159 @@
+---
+title: "NYPD Historical Shooting Analysis" 
+author: "Anonymous"
+date: "9/27/2021"
+output: html_document
+---
+
+---
+The input dataset is a list of every shooting incident that occurred in NYC going back to 2006 through the end of the 2020. The datasource is available on the website <https://catalog.data.gov/>
+It is manually extracted every quarter and reviewed by the Office of Management Analysis and Planning before being posted on the NYPD website. Each record represents a shooting incident in NYC and includes information about the event, the location and time of occurrence. In addition, information related to suspect and victim demographics is also included. This data can be used by the public to explore the nature of shooting/criminal activity. 
+---
+
+---
+This report attempts to analyse the data and draw some inference for academic purposes only. Attributes (columns), not required for the analysis will be discarded and missing data will be removed to cleanse the data, before starting the analysis.
+---
+
+
+## Step One - Import the shooting project dataset in a reproducible manner
+
+---
+Source the raw data from NYPD website and proceed with the analysis.
+---
+
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+
+library(tidyverse)
+url_input <- "https://data.cityofnewyork.us/api/views/833y-fsy8/rows.csv?accessType=DOWNLOAD"
+
+nypd_hist_shooting_data <- read_csv(url_input)
+```
+
+*Raw Data*
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+nypd_hist_shooting_data
+```
+
+## Step 2 -  Tidy and Transform Data
+
+---
+remove records with NA/missing data, format date and discard unwanted columns like INCIDENT_KEY, PRECINCT, JURISDICTION_CODE, STATISTICAL_MURDER_FLAG, X_COORD_CD,Y_COORD_CD,Latitude,Longitude,Lon_Lat
+---
+
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+library(lubridate)
+library(dplyr)
+
+nypd_hist_shooting_data <- na.omit(nypd_hist_shooting_data) %>%
+  mutate(OCCUR_DATE = mdy(OCCUR_DATE)) %>%
+  select(-c(INCIDENT_KEY, PRECINCT, JURISDICTION_CODE, STATISTICAL_MURDER_FLAG, X_COORD_CD,Y_COORD_CD,Latitude,Longitude,Lon_Lat))
+```
+
+*Formatted Data*
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+nypd_hist_shooting_data
+```
+
+*Summary*    
+
+---
+missing data is filtered out in previous step.
+---
+
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+summary(nypd_hist_shooting_data)
+```
+
+## Step 3 -  Visualization and Analysis
+
+---
+Shootings by Boroughs
+---
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+
+library(ggplot2)
+
+shootings_by_boroughs <- nypd_hist_shooting_data %>%
+  count(BORO)
+shootings_by_boroughs
+
+ggplot(data = shootings_by_boroughs, mapping = aes(x = BORO, y= n)) +
+  geom_bar(stat='identity') + 
+  labs(y = "Number of Shootings", x = "Borough")
+
+```
+
+---
+Shootings by locations in a Borough
+---
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+
+shootings_by_loc <- nypd_hist_shooting_data %>%
+  count(BORO,LOCATION_DESC,sort = TRUE)
+shootings_by_loc
+
+ggplot(data = shootings_by_loc, mapping = aes(y = BORO, x= n, color=LOCATION_DESC)) +
+  geom_point(size = 3, 
+             alpha = .6) + 
+  labs(title = "Shootings by Boro and location")
+
+
+### Perpetrator Sex
+perp_sex <- nypd_hist_shooting_data %>%
+  count(PERP_SEX,sort = TRUE)
+perp_sex
+
+### Perpetrator Race
+perp_race <- nypd_hist_shooting_data %>%
+  count(PERP_RACE,sort = TRUE)
+perp_race
+```
+
+---
+ Shootings per year
+---
+
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+
+shooting_yr_in_boro <- nypd_hist_shooting_data %>%
+  count(year = as.integer(year(OCCUR_DATE)), BORO,sort = TRUE)
+
+shooting_yr_in_boro
+
+ggplot(data = shooting_yr_in_boro, mapping = aes(x = year, y= log(n), color=BORO )) +
+  geom_line() + 
+  labs(x ="Year", y = "Number of Shootings", title = "Shootings by Boro per year")
+
+```
+
+---
+Shootings at a given time
+---
+
+```{r, echo=TRUE, message=FALSE, show_col_types = FALSE}
+shooting_time <- nypd_hist_shooting_data %>%
+   count(BORO, time = OCCUR_TIME, sort=TRUE)
+   
+shooting_time
+
+shootings_per_boro <- lapply(split(shooting_time, shooting_time$BORO), function(x){
+  ggplot(x) +
+  geom_bar(stat='identity',aes(y=n , x=time), color="dark green") +
+  labs(x ="Time of shooting", y = "Number of Shootings") +
+  facet_wrap(vars(BORO))
+})
+
+shootings_per_boro
+
+```
+
+## Step 4 - Add Bias Identification
+
+---
+A couple of conclusions can be drawn from the above analysis.
+---
+ 1. The shooting rates have gone down with every year for each Borough, since 2006
+ 2. Shooting peaks between 7:00 PM and 2:00 AM with maximumn shootings in Brooklyn Borough.
+ 3. Most of the perpetrators have been found to be Black male.
+
+Bias -  Since Brooklyn has lowest income of people, my personal bias is that shooting rates are highest there. I have mitigated it by analysing the data by looking at Year on year shootings per Borough.
